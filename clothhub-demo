@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StyleHub - Premium Fashion Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .hero-bg {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 400%;
+            height: 100%;
+            display: flex;
+            animation: slideShow 20s infinite;
+        }
+        
+        .hero-slide {
+            width: 25%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        @keyframes slideShow {
+            0%, 20% { transform: translateX(0); }
+            25%, 45% { transform: translateX(-25%); }
+            50%, 70% { transform: translateX(-50%); }
+            75%, 95% { transform: translateX(-75%); }
+            100% { transform: translateX(0); }
+        }
+        
+        .product-card {
+            transition: all 0.3s ease;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .category-card {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-card:hover {
+            transform: scale(1.05);
+        }
+        
+        .category-overlay {
+            background: linear-gradient(45deg, rgba(0,0,0,0.3), rgba(0,0,0,0.1));
+        }
+        
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+        }
+        
+        .cart-badge {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .zoom-image {
+            transition: transform 0.3s ease;
+        }
+        
+        .zoom-image:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Offer Banner -->
+    <div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white text-center py-2 text-sm">
+        <span>🔥 Summer Sale - Up to 70% OFF | Free Shipping on Orders Over $50</span>
+        <button onclick="this.parentElement.style.display='none'" class="ml-4 text-white hover:text-gray-200">×</button>
+    </div>
+
+    <!-- Header -->
+    <header class="sticky-header border-b shadow-sm">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">S</span>
+                    </div>
+                    <span class="text-2xl font-bold text-gray-800">StyleHub</span>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="hidden md:flex flex-1 max-w-lg mx-8">
+                    <div class="relative w-full">
+                        <input type="text" placeholder="Search for products..." 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <button class="absolute right-3 top-2.5 text-gray-400 hover:text-purple-600">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Navigation & Actions -->
+                <div class="flex items-center space-x-6">
+                    <!-- Navigation Menu -->
+                    <nav class="hidden lg:flex space-x-6">
+                        <a href="#" onclick="showSection('home')" class="text-gray-700 hover:text-purple-600 font-medium">Home</a>
+                        <a href="#" onclick="showSection('men')" class="text-gray-700 hover:text-purple-600 font-medium">Men</a>
+                        <a href="#" onclick="showSection('women')" class="text-gray-700 hover:text-purple-600 font-medium">Women</a>
+                        <a href="#" onclick="showSection('kids')" class="text-gray-700 hover:text-purple-600 font-medium">Kids</a>
+                        <a href="#" onclick="showSection('sale')" class="text-gray-700 hover:text-purple-600 font-medium text-red-600">Sale</a>
+                    </nav>
+
+                    <!-- User Account -->
+                    <div class="relative">
+                        <button onclick="toggleDropdown('userDropdown')" class="flex items-center space-x-1 text-gray-700 hover:text-purple-600">
+                            <i class="fas fa-user"></i>
+                            <span class="hidden md:inline" id="accountText">Account</span>
+                        </button>
+                        <div id="userDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border hidden">
+                            <div id="loggedOutMenu">
+                                <a href="#" onclick="showModal('loginModal')" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">Login</a>
+                                <a href="#" onclick="showModal('registerModal')" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">Register</a>
+                            </div>
+                            <div id="loggedInMenu" class="hidden">
+                                <div class="px-4 py-2 border-b bg-gray-50">
+                                    <p class="font-semibold text-sm" id="userWelcome">Welcome!</p>
+                                    <p class="text-xs text-gray-600" id="userEmail"></p>
+                                </div>
+                                <a href="#" onclick="showModal('profileModal')" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">My Profile</a>
+                                <a href="#" onclick="showModal('ordersModal')" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">My Orders</a>
+                                <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">Wishlist</a>
+                                <a href="#" onclick="downloadUserData()" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">Download My Data</a>
+                                <div class="border-t">
+                                    <a href="#" onclick="logout()" class="block px-4 py-2 text-red-600 hover:bg-red-50">Logout</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shopping Cart -->
+                    <button onclick="showModal('cartModal')" class="relative text-gray-700 hover:text-purple-600">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cartCount" class="cart-badge absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                    </button>
+
+                    <!-- Mobile Menu -->
+                    <button onclick="toggleMobileMenu()" class="lg:hidden text-gray-700">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Navigation -->
+            <div id="mobileMenu" class="lg:hidden mt-4 hidden">
+                <div class="flex flex-col space-y-2 pb-4">
+                    <a href="#" onclick="showSection('home')" class="text-gray-700 hover:text-purple-600 py-2">Home</a>
+                    <a href="#" onclick="showSection('men')" class="text-gray-700 hover:text-purple-600 py-2">Men</a>
+                    <a href="#" onclick="showSection('women')" class="text-gray-700 hover:text-purple-600 py-2">Women</a>
+                    <a href="#" onclick="showSection('kids')" class="text-gray-700 hover:text-purple-600 py-2">Kids</a>
+                    <a href="#" onclick="showSection('sale')" class="text-red-600 hover:text-red-700 py-2">Sale</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Home Section -->
+        <div id="homeSection" class="section">
+            <!-- Hero Section -->
+            <section class="hero-bg text-white py-20">
+                <!-- Animated Background Slider -->
+                <div class="hero-slider">
+                    <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');"></div>
+                    <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1445205170230-053b83016050?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80');"></div>
+                    <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');"></div>
+                    <div class="hero-slide" style="background-image: url('https://images.unsplash.com/photo-1472851294608-062f824d29cc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');"></div>
+                </div>
+                
+                <!-- Hero Content -->
+                <div class="container mx-auto px-4 text-center relative z-10">
+                    <h1 class="text-5xl md:text-6xl font-bold mb-6 fade-in drop-shadow-lg">Summer Collection 2024</h1>
+                    <p class="text-xl mb-8 fade-in drop-shadow-md">Discover the latest trends in fashion with up to 70% off</p>
+                    <div class="space-x-4 fade-in">
+                        <button onclick="showSection('women')" class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition shadow-lg">Shop Women</button>
+                        <button onclick="showSection('men')" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition shadow-lg">Shop Men</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Categories Section -->
+            <section class="py-16">
+                <div class="container mx-auto px-4">
+                    <h2 class="text-3xl font-bold text-center mb-12">Shop by Category</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div class="category-card bg-white rounded-lg overflow-hidden shadow-lg cursor-pointer" onclick="showSection('men')">
+                            <div class="h-48 bg-gradient-to-br from-blue-400 to-blue-600 relative">
+                                <div class="category-overlay absolute inset-0"></div>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <i class="fas fa-male text-white text-4xl"></i>
+                                </div>
+                            </div>
+                            <div class="p-4 text-center">
+                                <h3 class="font-semibold text-lg">Men's Fashion</h3>
+                                <p class="text-gray-600 text-sm">Trendy & Comfortable</p>
+                            </div>
+                        </div>
+
+                        <div class="category-card bg-white rounded-lg overflow-hidden shadow-lg cursor-pointer" onclick="showSection('women')">
+                            <div class="h-48 bg-gradient-to-br from-pink-400 to-purple-600 relative">
+                                <div class="category-overlay absolute inset-0"></div>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <i class="fas fa-female text-white text-4xl"></i>
+                                </div>
+                            </div>
+                            <div class="p-4 text-center">
+                                <h3 class="font-semibold text-lg">Women's Fashion</h3>
+                                <p class="text-gray-600 text-sm">Elegant & Stylish</p>
+                            </div>
+                        </div>
+
+                        <div class="category-card bg-white rounded-lg overflow-hidden shadow-lg cursor-pointer" onclick="showSection('kids')">
+                            <div class="h-48 bg-gradient-to-br from-green-400 to-teal-600 relative">
+                                <div class="category-overlay absolute inset-0"></div>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <i class="fas fa-child text-white text-4xl"></i>
+                                </div>
+                            </div>
+                            <div class="p-4 text-center">
+                                <h3 class="font-semibold text-lg">Kids Collection</h3>
+                                <p class="text-gray-600 text-sm">Fun & Colorful</p>
+                            </div>
+                        </div>
+
+                        <div class="category-card bg-white rounded-lg overflow-hidden shadow-lg cursor-pointer" onclick="showSection('accessories')">
+                            <div class="h-48 bg-gradient-to-br from-yellow-400 to-orange-600 relative">
+                                <div class="category-overlay absolute inset-0"></div>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <i class="fas fa-gem text-white text-4xl"></i>
+                                </div>
+                            </div>
+                            <div class="p-4 text-center">
+                                <h3 class="font-semibold text-lg">Accessories</h3>
+                                <p class="text-gray-600 text-sm">Complete Your Look</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Products -->
+            <section class="py-16 bg-white">
+                <div class="container mx-auto px-4">
+                    <h2 class="text-3xl font-bold text-center mb-12">Featured Products</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="featuredProducts">
+                        <!-- Products will be loaded here -->
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Product Sections -->
+        <div id="menSection" class="section hidden">
+            <div class="container mx-auto px-4 py-8">
+                <h1 class="text-3xl font-bold mb-8">Men's Collection</h1>
+                <div class="flex flex-wrap gap-4 mb-8">
+                    <select class="border rounded-lg px-4 py-2">
+                        <option>Sort by: Featured</option>
+                        <option>Price: Low to High</option>
+                        <option>Price: High to Low</option>
+                        <option>Newest</option>
+                    </select>
+                    <select class="border rounded-lg px-4 py-2">
+                        <option>All Sizes</option>
+                        <option>Small</option>
+                        <option>Medium</option>
+                        <option>Large</option>
+                        <option>XL</option>
+                    </select>
+                    <select class="border rounded-lg px-4 py-2">
+                        <option>All Colors</option>
+                        <option>Black</option>
+                        <option>White</option>
+                        <option>Blue</option>
+                        <option>Red</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="menProducts">
+                    <!-- Products will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="womenSection" class="section hidden">
+            <div class="container mx-auto px-4 py-8">
+                <h1 class="text-3xl font-bold mb-8">Women's Collection</h1>
+                <div class="flex flex-wrap gap-4 mb-8">
+                    <select class="border rounded-lg px-4 py-2">
+                        <option>Sort by: Featured</option>
+                        <option>Price: Low to High</option>
+                        <option>Price: High to Low</option>
+                        <option>Newest</option>
+                    </select>
+                    <select class="border rounded-lg px-4 py-2">
+                        <option>All Sizes</option>
+                        <option>XS</option>
+                        <option>Small</option>
+                        <option>Medium</option>
+                        <option>Large</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="womenProducts">
+                    <!-- Products will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="kidsSection" class="section hidden">
+            <div class="container mx-auto px-4 py-8">
+                <h1 class="text-3xl font-bold mb-8">Kids Collection</h1>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="kidsProducts">
+                    <!-- Products will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="saleSection" class="section hidden">
+            <div class="container mx-auto px-4 py-8">
+                <h1 class="text-3xl font-bold mb-8 text-red-600">🔥 Sale Items</h1>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="saleProducts">
+                    <!-- Products will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold">S</span>
+                        </div>
+                        <span class="text-xl font-bold">StyleHub</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">Your ultimate destination for premium fashion and style.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">About Us</a></li>
+                        <li><a href="#" class="hover:text-white">Contact</a></li>
+                        <li><a href="#" class="hover:text-white">Size Guide</a></li>
+                        <li><a href="#" class="hover:text-white">FAQs</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold mb-4">Customer Service</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Shipping & Returns</a></li>
+                        <li><a href="#" class="hover:text-white">Track Your Order</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white">Terms of Service</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold mb-4">Newsletter</h3>
+                    <p class="text-gray-400 mb-4">Subscribe for exclusive offers and updates</p>
+                    <div class="flex">
+                        <input type="email" placeholder="Your email" class="flex-1 px-4 py-2 rounded-l-lg text-gray-900">
+                        <button class="bg-purple-600 px-4 py-2 rounded-r-lg hover:bg-purple-700">Subscribe</button>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-sm text-gray-400 mb-2">We Accept:</p>
+                        <div class="flex space-x-2">
+                            <i class="fab fa-cc-visa text-2xl"></i>
+                            <i class="fab fa-cc-mastercard text-2xl"></i>
+                            <i class="fab fa-cc-paypal text-2xl"></i>
+                            <i class="fab fa-cc-apple-pay text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 StyleHub. All rights reserved. | Designed with ❤️ for fashion lovers</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Login</h2>
+                <button onclick="hideModal('loginModal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form onsubmit="loginUser(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                    <input type="email" id="loginEmail" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                    <input type="password" id="loginPassword" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div id="loginError" class="mb-4 text-red-600 text-sm hidden"></div>
+                <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition">Login</button>
+                <p class="text-center mt-4 text-gray-600">Don't have an account? 
+                    <a href="#" onclick="hideModal('loginModal'); showModal('registerModal')" class="text-purple-600 hover:underline">Register</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Register</h2>
+                <button onclick="hideModal('registerModal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form onsubmit="registerUser(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
+                    <input type="text" id="registerName" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                    <input type="email" id="registerEmail" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Phone Number</label>
+                    <input type="tel" id="registerPhone" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                    <input type="password" id="registerPassword" required minlength="6" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div id="registerError" class="mb-4 text-red-600 text-sm hidden"></div>
+                <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition">Register</button>
+                <p class="text-center mt-4 text-gray-600">Already have an account? 
+                    <a href="#" onclick="hideModal('registerModal'); showModal('loginModal')" class="text-purple-600 hover:underline">Login</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="modal">
+        <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Shopping Cart</h2>
+                <button onclick="hideModal('cartModal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="cartItems">
+                <p class="text-gray-500 text-center py-8">Your cart is empty</p>
+            </div>
+            <div id="cartTotal" class="border-t pt-4 mt-4 hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-lg font-semibold">Total: $<span id="totalAmount">0.00</span></span>
+                </div>
+                <button onclick="showModal('checkoutModal')" class="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition">
+                    Proceed to Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div id="productModal" class="modal">
+        <div class="bg-white rounded-lg p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold" id="productModalTitle">Product Details</h2>
+                <button onclick="hideModal('productModal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="productModalContent">
+                <!-- Product details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
+        <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">My Profile</h2>
+                <button onclick="hideModal('profileModal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="profileContent">
+                <!-- Profile content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Modal -->
+    <div id="ordersModal" class="modal">
+        <div class="bg-white rounded-lg p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">My Orders</h2>
+                <button onclick="hideModal('ordersModal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="ordersContent">
+                <!-- Orders content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="modal">
+        <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Checkout</h2>
+                <button onclick="hideModal('checkoutModal')" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form onsubmit="processOrder(event)">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">First Name</label>
+                        <input type="text" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Last Name</label>
+                        <input type="text" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                    <input type="email" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Address</label>
+                    <input type="text" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">City</label>
+                        <input type="text" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">State</label>
+                        <input type="text" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">ZIP Code</label>
+                        <input type="text" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Payment Method</label>
+                    <select required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <option value="">Select Payment Method</option>
+                        <option value="credit">Credit Card</option>
+                        <option value="debit">Debit Card</option>
+                        <option value="paypal">PayPal</option>
+                        <option value="cod">Cash on Delivery</option>
+                    </select>
+                </div>
+                <div class="border-t pt-4 mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span>Subtotal:</span>
+                        <span>$<span id="checkoutSubtotal">0.00</span></span>
+                    </div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span>Shipping:</span>
+                        <span>$5.99</span>
+                    </div>
+                    <div class="flex justify-between items-center font-bold text-lg">
+                        <span>Total:</span>
+                        <span>$<span id="checkoutTotal">5.99</span></span>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition">
+                    Place Order
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sample product data - ADD YOUR NEW PRODUCTS HERE!
+        const products = {
+            featured: [
+                {id: 1, name: "Premium Cotton T-Shirt", price: 29.99, originalPrice: 39.99, image: "👕", category: "men", rating: 4.5, reviews: 128},
+                {id: 2, name: "Elegant Summer Dress", price: 79.99, originalPrice: 99.99, image: "👗", category: "women", rating: 4.8, reviews: 95},
+                {id: 3, name: "Kids Colorful Hoodie", price: 34.99, originalPrice: 44.99, image: "🧥", category: "kids", rating: 4.6, reviews: 67},
+                {id: 4, name: "Stylish Leather Jacket", price: 149.99, originalPrice: 199.99, image: "🧥", category: "men", rating: 4.9, reviews: 203},
+                {id: 17, name: "Man Black Hoodie", price: 49.99, originalPrice: 59.99, image: "👔", category: "men", rating: 4.5, reviews: 50},
+                // ADD NEW FEATURED PRODUCTS HERE:
+                // {id: 17, name: "Your Product Name", price: 49.99, originalPrice: 59.99, image: "👔", category: "men", rating: 4.5, reviews: 50}
+            ],
+            men: [
+                {id: 5, name: "Classic Denim Jeans", price: 59.99, originalPrice: 79.99, image: "👖", category: "men", rating: 4.4, reviews: 156},
+                {id: 6, name: "Formal White Shirt", price: 49.99, originalPrice: 69.99, image: "👔", category: "men", rating: 4.7, reviews: 89},
+                {id: 7, name: "Casual Polo Shirt", price: 39.99, originalPrice: 49.99, image: "👕", category: "men", rating: 4.3, reviews: 112},
+                {id: 8, name: "Winter Wool Sweater", price: 89.99, originalPrice: 119.99, image: "🧥", category: "men", rating: 4.6, reviews: 78},
+                // ADD NEW MEN'S PRODUCTS HERE:
+                // {id: 18, name: "Your Men's Product", price: 39.99, originalPrice: 49.99, image: "👕", category: "men", rating: 4.2, reviews: 75}
+            ],
+            women: [
+                {id: 9, name: "Floral Print Blouse", price: 45.99, originalPrice: 59.99, image: "👚", category: "women", rating: 4.5, reviews: 134},
+                {id: 10, name: "High-Waist Jeans", price: 69.99, originalPrice: 89.99, image: "👖", category: "women", rating: 4.8, reviews: 167},
+                {id: 11, name: "Silk Evening Gown", price: 199.99, originalPrice: 299.99, image: "👗", category: "women", rating: 4.9, reviews: 45},
+                {id: 12, name: "Cozy Cardigan", price: 54.99, originalPrice: 74.99, image: "🧥", category: "women", rating: 4.4, reviews: 98},
+                // ADD NEW WOMEN'S PRODUCTS HERE:
+                // {id: 19, name: "Your Women's Product", price: 59.99, originalPrice: 79.99, image: "👗", category: "women", rating: 4.6, reviews: 120}
+            ],
+            kids: [
+                {id: 13, name: "Rainbow T-Shirt", price: 19.99, originalPrice: 24.99, image: "👕", category: "kids", rating: 4.7, reviews: 89},
+                {id: 14, name: "Denim Overalls", price: 39.99, originalPrice: 49.99, image: "👖", category: "kids", rating: 4.5, reviews: 67},
+                {id: 15, name: "Princess Dress", price: 34.99, originalPrice: 44.99, image: "👗", category: "kids", rating: 4.8, reviews: 123},
+                {id: 16, name: "Superhero Hoodie", price: 29.99, originalPrice: 39.99, image: "🧥", category: "kids", rating: 4.6, reviews: 156},
+                // ADD NEW KIDS PRODUCTS HERE:
+                // {id: 20, name: "Your Kids Product", price: 24.99, originalPrice: 29.99, image: "👕", category: "kids", rating: 4.5, reviews: 80}
+            ]
+        };
+
+        let cart = [];
+        let currentSection = 'home';
+        let users = JSON.parse(localStorage.getItem('stylehub_users') || '[]');
+        let currentUser = JSON.parse(localStorage.getItem('stylehub_current_user') || 'null');
+
+        // Initialize the website
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFeaturedProducts();
+            loadSectionProducts();
+            updateCartCount();
+            updateUserInterface();
+        });
+
+        // User Management Functions
+        function registerUser(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value.toLowerCase();
+            const phone = document.getElementById('registerPhone').value;
+            const password = document.getElementById('registerPassword').value;
+            const errorDiv = document.getElementById('registerError');
+            
+            // Check if user already exists
+            if (users.find(user => user.email === email)) {
+                errorDiv.textContent = 'User with this email already exists!';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            
+            // Create new user
+            const newUser = {
+                id: Date.now(),
+                name: name,
+                email: email,
+                phone: phone,
+                password: password, // In real app, this should be hashed
+                registrationDate: new Date().toISOString(),
+                orders: []
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('stylehub_users', JSON.stringify(users));
+            
+            // Auto login after registration
+            currentUser = { ...newUser };
+            delete currentUser.password; // Don't store password in current user
+            localStorage.setItem('stylehub_current_user', JSON.stringify(currentUser));
+            
+            hideModal('registerModal');
+            updateUserInterface();
+            showNotification('Registration successful! Welcome to StyleHub!', 'success');
+            
+            // Download user data as Excel-like format
+            downloadUserRegistrationData(newUser);
+        }
+
+        function loginUser(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value.toLowerCase();
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            // Find user
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (!user) {
+                errorDiv.textContent = 'Invalid email or password!';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+            
+            // Login successful
+            currentUser = { ...user };
+            delete currentUser.password; // Don't store password in current user
+            localStorage.setItem('stylehub_current_user', JSON.stringify(currentUser));
+            
+            hideModal('loginModal');
+            updateUserInterface();
+            showNotification(`Welcome back, ${user.name}!`, 'success');
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('stylehub_current_user');
+            updateUserInterface();
+            showNotification('Logged out successfully!', 'success');
+        }
+
+        function updateUserInterface() {
+            const accountText = document.getElementById('accountText');
+            const loggedOutMenu = document.getElementById('loggedOutMenu');
+            const loggedInMenu = document.getElementById('loggedInMenu');
+            const userWelcome = document.getElementById('userWelcome');
+            const userEmail = document.getElementById('userEmail');
+            
+            if (currentUser) {
+                // User is logged in
+                accountText.textContent = currentUser.name.split(' ')[0];
+                loggedOutMenu.classList.add('hidden');
+                loggedInMenu.classList.remove('hidden');
+                userWelcome.textContent = `Welcome, ${currentUser.name}!`;
+                userEmail.textContent = currentUser.email;
+            } else {
+                // User is not logged in
+                accountText.textContent = 'Account';
+                loggedOutMenu.classList.remove('hidden');
+                loggedInMenu.classList.add('hidden');
+            }
+        }
+
+        function downloadUserRegistrationData(user) {
+            const userData = {
+                'Registration Date': new Date(user.registrationDate).toLocaleDateString(),
+                'Full Name': user.name,
+                'Email': user.email,
+                'Phone': user.phone,
+                'User ID': user.id
+            };
+            
+            // Create CSV content
+            const csvContent = Object.entries(userData)
+                .map(([key, value]) => `${key},${value}`)
+                .join('\n');
+            
+            // Create and download file
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `StyleHub_Registration_${user.name.replace(/\s+/g, '_')}_${Date.now()}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function downloadUserData() {
+            if (!currentUser) return;
+            
+            const fullUser = users.find(u => u.id === currentUser.id);
+            if (!fullUser) return;
+            
+            const userData = {
+                'User Information': '',
+                'Name': fullUser.name,
+                'Email': fullUser.email,
+                'Phone': fullUser.phone,
+                'Registration Date': new Date(fullUser.registrationDate).toLocaleDateString(),
+                'User ID': fullUser.id,
+                '': '',
+                'Order History': '',
+                'Total Orders': fullUser.orders.length
+            };
+            
+            // Add order details
+            fullUser.orders.forEach((order, index) => {
+                userData[`Order ${index + 1} Date`] = new Date(order.date).toLocaleDateString();
+                userData[`Order ${index + 1} Total`] = `$${order.total}`;
+                userData[`Order ${index + 1} Status`] = order.status;
+            });
+            
+            // Create CSV content
+            const csvContent = Object.entries(userData)
+                .map(([key, value]) => `${key},${value}`)
+                .join('\n');
+            
+            // Create and download file
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `StyleHub_UserData_${currentUser.name.replace(/\s+/g, '_')}_${Date.now()}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showNotification('Your data has been downloaded!', 'success');
+        }
+
+        function loadProfileData() {
+            if (!currentUser) return;
+            
+            const profileContent = document.getElementById('profileContent');
+            profileContent.innerHTML = `
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
+                            <input type="text" value="${currentUser.name}" class="w-full px-3 py-2 border rounded-lg bg-gray-50" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                            <input type="email" value="${currentUser.email}" class="w-full px-3 py-2 border rounded-lg bg-gray-50" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Phone</label>
+                            <input type="tel" value="${currentUser.phone || 'Not provided'}" class="w-full px-3 py-2 border rounded-lg bg-gray-50" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Member Since</label>
+                            <input type="text" value="${new Date(currentUser.registrationDate).toLocaleDateString()}" class="w-full px-3 py-2 border rounded-lg bg-gray-50" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-4">Account Statistics</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-purple-600">${currentUser.orders ? currentUser.orders.length : 0}</div>
+                                <div class="text-gray-600">Total Orders</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-green-600">$${currentUser.orders ? currentUser.orders.reduce((sum, order) => sum + order.total, 0).toFixed(2) : '0.00'}</div>
+                                <div class="text-gray-600">Total Spent</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-blue-600">${Math.floor((Date.now() - new Date(currentUser.registrationDate)) / (1000 * 60 * 60 * 24))}</div>
+                                <div class="text-gray-600">Days as Member</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <button onclick="downloadUserData()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
+                            <i class="fas fa-download mr-2"></i>Download My Data
+                        </button>
+                        <button onclick="showModal('ordersModal')" class="border border-purple-600 text-purple-600 px-6 py-2 rounded-lg hover:bg-purple-50 transition">
+                            <i class="fas fa-shopping-bag mr-2"></i>View Orders
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadOrdersData() {
+            if (!currentUser || !currentUser.orders) return;
+            
+            const ordersContent = document.getElementById('ordersContent');
+            
+            if (currentUser.orders.length === 0) {
+                ordersContent.innerHTML = `
+                    <div class="text-center py-12">
+                        <i class="fas fa-shopping-bag text-6xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-600 mb-2">No Orders Yet</h3>
+                        <p class="text-gray-500 mb-6">Start shopping to see your orders here!</p>
+                        <button onclick="hideModal('ordersModal'); showSection('home')" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
+                            Start Shopping
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            const ordersHtml = currentUser.orders.map(order => `
+                <div class="border rounded-lg p-6 mb-4">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-lg font-semibold">Order #${order.id}</h3>
+                            <p class="text-gray-600">${new Date(order.date).toLocaleDateString()}</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xl font-bold text-purple-600">$${order.total.toFixed(2)}</div>
+                            <span class="inline-block px-3 py-1 rounded-full text-sm ${
+                                order.status === 'Processing' ? 'bg-yellow-100 text-yellow-800' :
+                                order.status === 'Shipped' ? 'bg-blue-100 text-blue-800' :
+                                order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
+                                'bg-gray-100 text-gray-800'
+                            }">${order.status}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <h4 class="font-semibold mb-2">Items (${order.items.length})</h4>
+                            <div class="space-y-2">
+                                ${order.items.map(item => `
+                                    <div class="flex items-center space-x-3">
+                                        <span class="text-2xl">${item.image}</span>
+                                        <div class="flex-1">
+                                            <div class="font-medium">${item.name}</div>
+                                            <div class="text-sm text-gray-600">Qty: ${item.quantity} × $${item.price}</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-2">Shipping Address</h4>
+                            <div class="text-sm text-gray-600">
+                                <p>${order.shippingAddress.firstName} ${order.shippingAddress.lastName}</p>
+                                <p>${order.shippingAddress.address}</p>
+                                <p>${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.zipCode}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center pt-4 border-t">
+                        <div class="text-sm text-gray-600">
+                            Payment: ${order.paymentMethod}
+                        </div>
+                        <button onclick="downloadOrderConfirmation(${JSON.stringify(order).replace(/"/g, '&quot;')})" class="text-purple-600 hover:text-purple-700 text-sm">
+                            <i class="fas fa-download mr-1"></i>Download Receipt
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            ordersContent.innerHTML = ordersHtml;
+        }
+
+        // Navigation functions
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+            
+            // Show selected section
+            const sectionElement = document.getElementById(section + 'Section');
+            if (sectionElement) {
+                sectionElement.classList.remove('hidden');
+                currentSection = section;
+                
+                // Load products for the section
+                if (section !== 'home') {
+                    loadSectionProducts(section);
+                }
+            }
+            
+            // Close mobile menu
+            document.getElementById('mobileMenu').classList.add('hidden');
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Modal functions
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Update checkout totals if it's checkout modal
+            if (modalId === 'checkoutModal') {
+                updateCheckoutTotals();
+            }
+            
+            // Load profile data if it's profile modal
+            if (modalId === 'profileModal') {
+                loadProfileData();
+            }
+            
+            // Load orders data if it's orders modal
+            if (modalId === 'ordersModal') {
+                loadOrdersData();
+            }
+        }
+
+        function hideModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Product loading functions
+        function loadFeaturedProducts() {
+            const container = document.getElementById('featuredProducts');
+            container.innerHTML = products.featured.map(product => createProductCard(product)).join('');
+        }
+
+        function loadSectionProducts(section = currentSection) {
+            const container = document.getElementById(section + 'Products');
+            if (!container) return;
+            
+            let productList = [];
+            if (section === 'sale') {
+                // Show all products with discounts for sale section
+                productList = [...products.featured, ...products.men, ...products.women, ...products.kids];
+            } else {
+                productList = products[section] || [];
+            }
+            
+            container.innerHTML = productList.map(product => createProductCard(product)).join('');
+        }
+
+        function createProductCard(product) {
+            const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+            const stars = '★'.repeat(Math.floor(product.rating)) + '☆'.repeat(5 - Math.floor(product.rating));
+            
+            return `
+                <div class="product-card bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="relative">
+                        <div class="h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-6xl cursor-pointer" onclick="showProductDetail(${product.id})">
+                            ${product.image}
+                        </div>
+                        ${discount > 0 ? `<span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-sm font-bold">-${discount}%</span>` : ''}
+                        <button onclick="toggleWishlist(${product.id})" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-xl">
+                            <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-lg mb-2 cursor-pointer hover:text-purple-600" onclick="showProductDetail(${product.id})">${product.name}</h3>
+                        <div class="flex items-center mb-2">
+                            <span class="text-yellow-400 text-sm">${stars}</span>
+                            <span class="text-gray-500 text-sm ml-2">(${product.reviews})</span>
+                        </div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div>
+                                <span class="text-xl font-bold text-purple-600">$${product.price}</span>
+                                ${product.originalPrice > product.price ? `<span class="text-gray-500 line-through ml-2">$${product.originalPrice}</span>` : ''}
+                            </div>
+                        </div>
+                        <button onclick="addToCart(${product.id})" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Product detail function
+        function showProductDetail(productId) {
+            const product = findProductById(productId);
+            if (!product) return;
+            
+            const modalContent = document.getElementById('productModalContent');
+            const modalTitle = document.getElementById('productModalTitle');
+            
+            modalTitle.textContent = product.name;
+            
+            const stars = '★'.repeat(Math.floor(product.rating)) + '☆'.repeat(5 - Math.floor(product.rating));
+            const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+            
+            modalContent.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <div class="h-96 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center text-8xl zoom-image">
+                            ${product.image}
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold mb-4">${product.name}</h1>
+                        <div class="flex items-center mb-4">
+                            <span class="text-yellow-400">${stars}</span>
+                            <span class="text-gray-500 ml-2">(${product.reviews} reviews)</span>
+                        </div>
+                        <div class="mb-6">
+                            <span class="text-3xl font-bold text-purple-600">$${product.price}</span>
+                            ${product.originalPrice > product.price ? `<span class="text-gray-500 line-through ml-3 text-xl">$${product.originalPrice}</span>` : ''}
+                            ${discount > 0 ? `<span class="bg-red-500 text-white px-2 py-1 rounded ml-3 text-sm">Save ${discount}%</span>` : ''}
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="font-semibold mb-2">Size:</h3>
+                            <div class="flex space-x-2">
+                                <button class="border border-gray-300 px-3 py-2 rounded hover:border-purple-600 hover:text-purple-600">XS</button>
+                                <button class="border border-gray-300 px-3 py-2 rounded hover:border-purple-600 hover:text-purple-600">S</button>
+                                <button class="border border-gray-300 px-3 py-2 rounded hover:border-purple-600 hover:text-purple-600">M</button>
+                                <button class="border border-gray-300 px-3 py-2 rounded hover:border-purple-600 hover:text-purple-600">L</button>
+                                <button class="border border-gray-300 px-3 py-2 rounded hover:border-purple-600 hover:text-purple-600">XL</button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="font-semibold mb-2">Color:</h3>
+                            <div class="flex space-x-2">
+                                <button class="w-8 h-8 bg-black rounded-full border-2 border-gray-300 hover:border-purple-600"></button>
+                                <button class="w-8 h-8 bg-white rounded-full border-2 border-gray-300 hover:border-purple-600"></button>
+                                <button class="w-8 h-8 bg-blue-500 rounded-full border-2 border-gray-300 hover:border-purple-600"></button>
+                                <button class="w-8 h-8 bg-red-500 rounded-full border-2 border-gray-300 hover:border-purple-600"></button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h3 class="font-semibold mb-2">Quantity:</h3>
+                            <div class="flex items-center space-x-3">
+                                <button onclick="changeQuantity(-1)" class="border border-gray-300 px-3 py-2 rounded hover:bg-gray-100">-</button>
+                                <span id="quantity" class="px-4 py-2 border border-gray-300 rounded">1</span>
+                                <button onclick="changeQuantity(1)" class="border border-gray-300 px-3 py-2 rounded hover:bg-gray-100">+</button>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <button onclick="addToCart(${product.id}); hideModal('productModal')" class="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition font-semibold">
+                                Add to Cart
+                            </button>
+                            <button class="w-full border border-purple-600 text-purple-600 py-3 rounded-lg hover:bg-purple-50 transition font-semibold">
+                                Add to Wishlist
+                            </button>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <h3 class="font-semibold mb-3">Product Details:</h3>
+                            <ul class="text-gray-600 space-y-1">
+                                <li>• Premium quality materials</li>
+                                <li>• Comfortable fit</li>
+                                <li>• Machine washable</li>
+                                <li>• Available in multiple sizes</li>
+                                <li>• 30-day return policy</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="mt-6 p-4 bg-green-50 rounded-lg">
+                            <div class="flex items-center text-green-600">
+                                <i class="fas fa-truck mr-2"></i>
+                                <span class="font-semibold">Free shipping on orders over $50</span>
+                            </div>
+                            <div class="flex items-center text-green-600 mt-1">
+                                <i class="fas fa-undo mr-2"></i>
+                                <span>Easy 30-day returns</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            showModal('productModal');
+        }
+
+        function changeQuantity(change) {
+            const quantityElement = document.getElementById('quantity');
+            let quantity = parseInt(quantityElement.textContent);
+            quantity = Math.max(1, quantity + change);
+            quantityElement.textContent = quantity;
+        }
+
+        // Cart functions
+        function addToCart(productId) {
+            const product = findProductById(productId);
+            if (!product) return;
+            
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({...product, quantity: 1});
+            }
+            
+            updateCartCount();
+            updateCartDisplay();
+            
+            // Show success message
+            showNotification('Product added to cart!', 'success');
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartCount();
+            updateCartDisplay();
+        }
+
+        function updateCartQuantity(productId, newQuantity) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                if (newQuantity <= 0) {
+                    removeFromCart(productId);
+                } else {
+                    item.quantity = newQuantity;
+                    updateCartCount();
+                    updateCartDisplay();
+                }
+            }
+        }
+
+        function updateCartCount() {
+            const count = cart.reduce((total, item) => total + item.quantity, 0);
+            document.getElementById('cartCount').textContent = count;
+        }
+
+        function updateCartDisplay() {
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p class="text-gray-500 text-center py-8">Your cart is empty</p>';
+                cartTotal.classList.add('hidden');
+                return;
+            }
+            
+            cartTotal.classList.remove('hidden');
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('totalAmount').textContent = total.toFixed(2);
+            
+            cartItems.innerHTML = cart.map(item => `
+                <div class="flex items-center space-x-4 py-4 border-b">
+                    <div class="text-3xl">${item.image}</div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold">${item.name}</h3>
+                        <p class="text-gray-600">$${item.price}</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="updateCartQuantity(${item.id}, ${item.quantity - 1})" class="border px-2 py-1 rounded">-</button>
+                        <span class="px-3">${item.quantity}</span>
+                        <button onclick="updateCartQuantity(${item.id}, ${item.quantity + 1})" class="border px-2 py-1 rounded">+</button>
+                    </div>
+                    <button onclick="removeFromCart(${item.id})" class="text-red-500 hover:text-red-700">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function updateCheckoutTotals() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const total = subtotal + 5.99; // Adding shipping
+            
+            document.getElementById('checkoutSubtotal').textContent = subtotal.toFixed(2);
+            document.getElementById('checkoutTotal').textContent = total.toFixed(2);
+        }
+
+        // Utility functions
+        function findProductById(id) {
+            const allProducts = [...products.featured, ...products.men, ...products.women, ...products.kids];
+            return allProducts.find(product => product.id === id);
+        }
+
+        function toggleWishlist(productId) {
+            // Wishlist functionality would be implemented here
+            showNotification('Added to wishlist!', 'success');
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-semibold ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function processOrder(event) {
+            event.preventDefault();
+            
+            if (!currentUser) {
+                showNotification('Please login to place an order!', 'error');
+                hideModal('checkoutModal');
+                showModal('loginModal');
+                return;
+            }
+            
+            // Create order
+            const order = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                items: [...cart],
+                total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) + 5.99,
+                status: 'Processing',
+                shippingAddress: {
+                    firstName: event.target.querySelector('input[type="text"]').value,
+                    lastName: event.target.querySelectorAll('input[type="text"]')[1].value,
+                    email: event.target.querySelector('input[type="email"]').value,
+                    address: event.target.querySelectorAll('input[type="text"]')[2].value,
+                    city: event.target.querySelectorAll('input[type="text"]')[3].value,
+                    state: event.target.querySelectorAll('input[type="text"]')[4].value,
+                    zipCode: event.target.querySelectorAll('input[type="text"]')[5].value
+                },
+                paymentMethod: event.target.querySelector('select').value
+            };
+            
+            // Add order to user's order history
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) {
+                users[userIndex].orders.push(order);
+                localStorage.setItem('stylehub_users', JSON.stringify(users));
+                
+                // Update current user
+                currentUser.orders = users[userIndex].orders;
+                localStorage.setItem('stylehub_current_user', JSON.stringify(currentUser));
+            }
+            
+            // Simulate order processing
+            hideModal('checkoutModal');
+            hideModal('cartModal');
+            
+            // Clear cart
+            cart = [];
+            updateCartCount();
+            updateCartDisplay();
+            
+            showNotification('Order placed successfully! You will receive a confirmation email shortly.', 'success');
+            
+            // Download order confirmation
+            downloadOrderConfirmation(order);
+        }
+
+        function downloadOrderConfirmation(order) {
+            const orderData = {
+                'Order Confirmation': '',
+                'Order ID': order.id,
+                'Order Date': new Date(order.date).toLocaleDateString(),
+                'Customer Name': `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
+                'Email': order.shippingAddress.email,
+                'Total Amount': `$${order.total.toFixed(2)}`,
+                'Status': order.status,
+                '': '',
+                'Shipping Address': '',
+                'Address': order.shippingAddress.address,
+                'City': order.shippingAddress.city,
+                'State': order.shippingAddress.state,
+                'ZIP Code': order.shippingAddress.zipCode,
+                ' ': '',
+                'Order Items': ''
+            };
+            
+            // Add items
+            order.items.forEach((item, index) => {
+                orderData[`Item ${index + 1}`] = item.name;
+                orderData[`Quantity ${index + 1}`] = item.quantity;
+                orderData[`Price ${index + 1}`] = `$${item.price}`;
+                orderData[`Subtotal ${index + 1}`] = `$${(item.price * item.quantity).toFixed(2)}`;
+            });
+            
+            // Create CSV content
+            const csvContent = Object.entries(orderData)
+                .map(([key, value]) => `${key},${value}`)
+                .join('\n');
+            
+            // Create and download file
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `StyleHub_Order_${order.id}_${Date.now()}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.relative')) {
+                document.querySelectorAll('[id$="Dropdown"]').forEach(dropdown => {
+                    dropdown.classList.add('hidden');
+                });
+            }
+        });
+
+        // Close modals when clicking outside
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ccb3f6a7799087',t:'MTc1NzQ4NDAwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
